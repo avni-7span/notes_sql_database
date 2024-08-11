@@ -4,14 +4,14 @@ enum NoteStateStatus { initial, loaded, error, loading, success }
 
 class NotesState extends Equatable {
   const NotesState(
-      {this.status = NoteStateStatus.initial, this.note, this.listOfNotes});
+      {this.status = NoteStateStatus.initial, this.note, this.listOfNotes = const []});
 
   final NoteStateStatus status;
   final Notes? note;
-  final List<Notes>? listOfNotes;
+  final List<Notes> listOfNotes;
 
   @override
-  List<Object?> get props => [status, note, listOfNotes];
+  List<Object?> get props => [status, listOfNotes, note];
 
   NotesState copyWith({
     NoteStateStatus? status,

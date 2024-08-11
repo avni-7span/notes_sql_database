@@ -78,36 +78,42 @@ class _NoteScreenState extends State<NoteScreen> {
       body: BlocBuilder<NotesBloc, NotesState>(
         builder: (context, state) {
           return ListView.builder(
-            itemCount: state.listOfNotes?.length,
+            itemCount: 2,
             itemBuilder: (context, index) {
-              return Card(
-                color: Colors.purple.shade100,
-                margin: const EdgeInsets.all(10),
-                child: state.status == NoteStateStatus.loading
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : ListTile(
-                        title: Text('${state.listOfNotes?[index].title}'),
-                        subtitle: Text('${state.listOfNotes?[index].content}'),
-                        trailing: SizedBox(
-                          width: 100,
-                          child: Row(
-                            children: [
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.edit)),
-                              IconButton(
-                                  onPressed: () => context
-                                      .read<NotesBloc>()
-                                      .add(DeleteNoteEvent(
-                                          state.listOfNotes![index].noteId!)),
-                                  icon: const Icon(Icons.delete)),
-                            ],
-                          ),
-                        ),
+              if (state.status == NoteStateStatus.loading) {
+                const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (state.listOfNotes.isEmpty) {
+                const Center(
+                  child: Text(' Start creating Notes by clicking add button. '),
+                );
+              } else if (state.listOfNotes.isNotEmpty) {
+                Card(
+                  color: Colors.purple.shade100,
+                  margin: const EdgeInsets.all(10),
+                  child: ListTile(
+                    title: Text(state.listOfNotes[index].title),
+                    subtitle: Text(state.listOfNotes[index].content),
+                    trailing: SizedBox(
+                      width: 100,
+                      child: Row(
+                        children: [
+                          IconButton(
+                              onPressed: () {}, icon: const Icon(Icons.edit)),
+                          IconButton(
+                              onPressed: () => context.read<NotesBloc>().add(
+                                  DeleteNoteEvent(
+                                      state.listOfNotes[index].noteId!)),
+                              icon: const Icon(Icons.delete)),
+                        ],
                       ),
-              );
+                    ),
+                  ),
+                );
+              } else {
+                const SizedBox();
+              }
             },
           );
         },

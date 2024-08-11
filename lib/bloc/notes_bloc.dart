@@ -32,6 +32,8 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
           if (res > 0) {
             emit(state.copyWith(status: NoteStateStatus.loaded));
             add(const GetListOfNotesEvent());
+          } else {
+            print('else bloc ma gayu...res<0=0 aavyo');
           }
         } catch (e) {
           emit(state.copyWith(status: NoteStateStatus.error));
@@ -75,8 +77,8 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       (event, emit) async {
         try {
           emit(state.copyWith(status: NoteStateStatus.loading));
-          final note = await SQLHelper.getNoteById(event.id);
-          emit(state.copyWith(status: NoteStateStatus.loaded, note: note));
+          final notes = await SQLHelper.getNoteById(event.id);
+          emit(state.copyWith(status: NoteStateStatus.loaded, note: notes));
         } catch (e) {
           emit(state.copyWith(status: NoteStateStatus.error));
         }

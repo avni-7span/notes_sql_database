@@ -1,8 +1,4 @@
-import 'dart:convert';
 import 'package:equatable/equatable.dart';
-
-Notes notesFromMap(String str) => Notes.fromMap(json.decode(str));
-String notesToMap(Notes data) => json.encode(data.toMap());
 
 class Notes extends Equatable {
   final int? noteId;

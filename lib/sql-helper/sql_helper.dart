@@ -7,7 +7,7 @@ class SQLHelper {
 
   static Future<void> createDatabase(sql.Database database) async {
     await database.execute("""
-    CREATE TABLE items(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    CREATE TABLE items(noteId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     title TEXT,
     description TEXT,
     createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -48,11 +48,6 @@ class SQLHelper {
       limit: 1,
     );
     return Notes.fromMap(note.first);
-    // if (note != null) {
-    //   return Notes.fromMap(note.first);
-    // } else {
-    //   throw Exception('Id not found');
-    // }
   }
 
   /// update Note into database
