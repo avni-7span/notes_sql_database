@@ -1,13 +1,16 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart' as sql;
+import 'package:sql_notes/model/notes_model.dart';
 
 class SQLHelper {
+  const SQLHelper();
+
   static Future<void> createDatabase(sql.Database database) async {
     await database.execute("""
     CREATE TABLE items(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     title TEXT,
     description TEXT,
-    creatEAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
     """);
   }
@@ -22,41 +25,47 @@ class SQLHelper {
     );
   }
 
-  /// to create new data in database
-  static Future<int> createNewNote(String title, String? description) async {
+  /// to create new note into database
+  static Future<int> createNewNote(Notes notes) async {
     final db = await SQLHelper.db();
-    final data = {'title': title, 'description': description};
-    final id = await db.insert('items', data,
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    final id = await db.insert('items', notes.toMap());
     return id;
   }
 
-  /// query to ask for list of data from database
-  static Future<List<Map<String, dynamic>>> getListOfItems() async {
+  /// get list of Notes from database
+  static Future<List<Notes>> getListOfNotes() async {
     final db = await SQLHelper.db();
-    return db.query('items', orderBy: 'id');
+    final listOfNotes = await db.query('items');
+    return listOfNotes.map((e) => Notes.fromMap(e)).toList();
   }
 
-  static Future<List<Map<String, dynamic>>> getItem(int id) async {
+  /// get note by ID from database
+  static Future<Notes> getNoteById(int id) async {
     final db = await SQLHelper.db();
-    return db.query('items', where: 'id=?', whereArgs: [id], limit: 1);
+    final note = await db.query(
+      'items',
+      where: 'noteId=?',
+      limit: 1,
+    );
+    return Notes.fromMap(note.first);
+    // if (note != null) {
+    //   return Notes.fromMap(note.first);
+    // } else {
+    //   throw Exception('Id not found');
+    // }
   }
 
-  static Future<int> updateItem(
-      int id, String title, String? description) async {
+  /// update Note into database
+  static Future<int> updateNote(Notes note) async {
     final db = await SQLHelper.db();
-    final data = {
-      'title': title,
-      'description': description,
-      'createAt': DateTime.now().toString()
-    };
-    final result =
-        await db.update('items', data, where: 'id=?', whereArgs: [id]);
+    final result = await db.update('items', note.toMap(),
+        where: 'noteId=?', whereArgs: [note.noteId]);
     return result;
   }
 
-  static Future deleteItem(int id) async {
+  /// Delete Note
+  static Future deleteNote(int id) async {
     final db = await SQLHelper.db();
-    db.delete('items', where: 'id=?', whereArgs: [id]);
+    db.delete('items', where: 'noteId=?', whereArgs: [id]);
   }
 }
