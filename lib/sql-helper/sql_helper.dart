@@ -7,10 +7,11 @@ class SQLHelper {
 
   static Future<void> createDatabase(sql.Database database) async {
     await database.execute("""
-    CREATE TABLE items(noteId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    CREATE TABLE IF NOT EXISTS items(
+    noteId INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT,
-    description TEXT,
-    createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    content TEXT,
+    createdAt Text
     )
     """);
   }
@@ -61,6 +62,6 @@ class SQLHelper {
   /// Delete Note
   static Future deleteNote(int id) async {
     final db = await SQLHelper.db();
-    db.delete('items', where: 'noteId=?', whereArgs: [id]);
+    return db.delete('items', where: 'noteId =?', whereArgs: [id]);
   }
 }

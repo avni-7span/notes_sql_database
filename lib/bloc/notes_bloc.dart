@@ -12,12 +12,13 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
     on<NotesEvent>((event, emit) {});
     on<GetListOfNotesEvent>((event, emit) async {
       try {
-        emit(state.copyWith(status: NoteStateStatus.loading));
+        emit(state.copyWith(status: NoteStateStatus.loadingListOfNotes));
         final listOfNotes = await SQLHelper.getListOfNotes();
         emit(state.copyWith(
-            status: NoteStateStatus.loaded, listOfNotes: listOfNotes));
+            status: NoteStateStatus.listLoaded, listOfNotes: listOfNotes));
       } catch (e) {
-        emit(state.copyWith(status: NoteStateStatus.error));
+        emit(state.copyWith(
+            status: NoteStateStatus.failure, error: e.toString()));
       }
     });
     on<CreateNewNoteEvent>(
@@ -36,7 +37,8 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
             print('else bloc ma gayu...res<0=0 aavyo');
           }
         } catch (e) {
-          emit(state.copyWith(status: NoteStateStatus.error));
+          emit(state.copyWith(
+              status: NoteStateStatus.failure, error: e.toString()));
         }
       },
     );
@@ -54,7 +56,8 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
             add(const GetListOfNotesEvent());
           }
         } catch (e) {
-          emit(state.copyWith(status: NoteStateStatus.error));
+          emit(state.copyWith(
+              status: NoteStateStatus.failure, error: e.toString()));
         }
       },
     );
@@ -64,12 +67,14 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
           emit(state.copyWith(status: NoteStateStatus.loading));
           final res = await SQLHelper.deleteNote(event.id);
           if (res > 0) {
-            emit(state.copyWith(status: NoteStateStatus.loading));
-            emit(state.copyWith(status: NoteStateStatus.loaded));
+            emit(state.copyWith(status: NoteStateStatus.deleteSuccess));
             add(const GetListOfNotesEvent());
+          } else {
+            print('else bloc ma gayu...res<0=0 aavyo');
           }
         } catch (e) {
-          emit(state.copyWith(status: NoteStateStatus.error));
+          emit(state.copyWith(
+              status: NoteStateStatus.failure, error: e.toString()));
         }
       },
     );
@@ -80,7 +85,8 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
           final notes = await SQLHelper.getNoteById(event.id);
           emit(state.copyWith(status: NoteStateStatus.loaded, note: notes));
         } catch (e) {
-          emit(state.copyWith(status: NoteStateStatus.error));
+          emit(state.copyWith(
+              status: NoteStateStatus.failure, error: e.toString()));
         }
       },
     );
