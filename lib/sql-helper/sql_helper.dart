@@ -46,6 +46,7 @@ class SQLHelper {
     final note = await db.query(
       'items',
       where: 'noteId=?',
+      whereArgs: [id],
       limit: 1,
     );
     return Notes.fromMap(note.first);

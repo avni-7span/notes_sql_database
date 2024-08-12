@@ -34,7 +34,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
             emit(state.copyWith(status: NoteStateStatus.loaded));
             add(const GetListOfNotesEvent());
           } else {
-            print('else bloc ma gayu...res<0=0 aavyo');
+            print('else part ma gayu...res<0=0 aavyo');
           }
         } catch (e) {
           emit(state.copyWith(
