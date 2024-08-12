@@ -47,12 +47,12 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
         try {
           emit(state.copyWith(status: NoteStateStatus.loading));
           final res = await SQLHelper.updateNote(Notes(
+              noteId: event.note.noteId,
               title: event.note.title,
               content: event.note.content,
-              noteId: event.note.noteId,
               createdAt: event.note.createdAt));
           if (res > 0) {
-            emit(state.copyWith(status: NoteStateStatus.loaded));
+            emit(state.copyWith(status: NoteStateStatus.updateSuccess));
             add(const GetListOfNotesEvent());
           }
         } catch (e) {

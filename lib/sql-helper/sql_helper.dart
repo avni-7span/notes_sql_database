@@ -55,7 +55,7 @@ class SQLHelper {
   static Future<int> updateNote(Notes note) async {
     final db = await SQLHelper.db();
     final result = await db.update('items', note.toMap(),
-        where: 'noteId=?', whereArgs: [note.noteId]);
+        where: 'noteId =?', whereArgs: [note.noteId]);
     return result;
   }
 

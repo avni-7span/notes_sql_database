@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sql_notes/bloc/notes_bloc.dart';
-import 'package:sql_notes/model/notes_model.dart';
+import 'package:sql_notes/widgets/add_note_bottom_sheet.dart';
+import 'package:sql_notes/widgets/update_note_bottom_sheet.dart';
 
 class NoteScreen extends StatefulWidget {
   const NoteScreen({super.key});
@@ -15,48 +15,36 @@ class _NoteScreenState extends State<NoteScreen> {
   TextEditingController titleController = TextEditingController();
   TextEditingController contentController = TextEditingController();
   String createdAt = DateTime.now().toIso8601String();
+  int? id;
 
   void _addNote() {
     showModalBottomSheet(
       context: context,
       elevation: 5,
       isScrollControlled: true,
-      builder: (context) => Container(
-        padding: EdgeInsets.only(
-            left: 15,
-            right: 15,
-            top: 15,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 120),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            TextFormField(
-              controller: titleController,
-              decoration: const InputDecoration(hintText: 'Title'),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: contentController,
-              decoration: const InputDecoration(hintText: 'Description'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-                onPressed: () {
-                  context.read<NotesBloc>().add(
-                        CreateNewNoteEvent(
-                          Notes(
-                              title: titleController.text,
-                              content: contentController.text,
-                              createdAt: createdAt),
-                        ),
-                      );
-                  titleController.clear();
-                  contentController.clear();
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Create'))
-          ],
+      builder: (context) => BlocProvider.value(
+        value: BlocProvider.of<NotesBloc>(context),
+        child: AddBottomSheetWidget(
+          titleController: titleController,
+          contentController: contentController,
+          createdAt: createdAt,
+        ),
+      ),
+    );
+  }
+
+  void _updateNote() {
+    showModalBottomSheet(
+      context: context,
+      elevation: 5,
+      isScrollControlled: true,
+      builder: (context) => BlocProvider.value(
+        value: BlocProvider.of<NotesBloc>(context),
+        child: UpdateBottomSheetWidget(
+          titleController: titleController,
+          contentController: contentController,
+          createdAt: createdAt,
+          id: id ?? 0,
         ),
       ),
     );
@@ -116,16 +104,26 @@ class _NoteScreenState extends State<NoteScreen> {
                         child: Row(
                           children: [
                             IconButton(
-                                onPressed: _addNote,
+                                onPressed: () {
+                                  titleController.text =
+                                      state.listOfNotes[index].title;
+                                  contentController.text =
+                                      state.listOfNotes[index].content;
+                                  context.read<NotesBloc>().add(
+                                      GetNoteByIDEvent(
+                                          state.listOfNotes[index].noteId!));
+                                  _updateNote();
+                                },
                                 icon: const Icon(Icons.edit)),
                             IconButton(
-                                onPressed: () {
-                                  context.read<NotesBloc>().add(
-                                        DeleteNoteEvent(
-                                            state.listOfNotes[index].noteId!),
-                                      );
-                                },
-                                icon: const Icon(Icons.delete))
+                              onPressed: () {
+                                context.read<NotesBloc>().add(
+                                      DeleteNoteEvent(
+                                          state.listOfNotes[index].noteId!),
+                                    );
+                              },
+                              icon: const Icon(Icons.delete),
+                            )
                           ],
                         ),
                       ),
@@ -140,7 +138,9 @@ class _NoteScreenState extends State<NoteScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.purple.shade200,
-          onPressed: _addNote,
+          onPressed: () {
+            _addNote();
+          },
           child: const Icon(
             Icons.add,
             color: Colors.black,

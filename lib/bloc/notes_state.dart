@@ -8,15 +8,16 @@ enum NoteStateStatus {
   loadingListOfNotes,
   listLoaded,
   updateSuccess,
-  deleteSuccess
+  deleteSuccess,
 }
 
 class NotesState extends Equatable {
-  const NotesState(
-      {this.status = NoteStateStatus.initial,
-      this.note,
-      this.listOfNotes = const [],
-      this.error = ''});
+  const NotesState({
+    this.status = NoteStateStatus.initial,
+    this.note,
+    this.listOfNotes = const [],
+    this.error = '',
+  });
 
   final NoteStateStatus status;
   final Notes? note;
